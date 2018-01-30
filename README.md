@@ -12,3 +12,10 @@ Furthermore it's to create machine-oriented event data by redoing ElastAlert's n
 ## Usage
 
 Set `ES_ADDR` to your ElasticSearch address.
+
+## Scope
+
+Beats:
+
+1. [Filebeat](https://www.elastic.co/products/beats/filebeat)
+2. [Auditbeat](https://www.elastic.co/products/beats/auditbeat)
