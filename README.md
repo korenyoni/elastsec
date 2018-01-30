@@ -1,6 +1,6 @@
 # ElastSec
 
-Connects to Elasticsearch, parses heartbeat writes, creates human readable alerts.
+Connects to Elasticsearch, parses heartbeat writes, creates human readable alerts with focus on what machine the event came from.
 
 ## Motivation
 
