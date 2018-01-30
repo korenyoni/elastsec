@@ -1,0 +1,4 @@
+package: .
+import:
+- package: github.com/olivere/elastic
+  version: ^6.1.4
