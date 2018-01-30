@@ -16,6 +16,9 @@ type Event struct {
     Time    time.Time `json:"@timestamp"`
 }
 
+const (
+    indexName   = "filebeat*"
+)
 
 func Loop(events chan<- string) {
     ctx := context.Background()
@@ -27,11 +30,25 @@ func Loop(events chan<- string) {
     }
     defer client.Stop()
 
+    var e Event
     // range for last 10 seconds
-    for _ = range time.Tick(10 * time.Second) {
-          query := elastic.NewRangeQuery("@timestamp").From("now-10s").To("now")
-          searchResult, err := client.Search().
-          Index("filebeat*").
+    for c := time.Tick(10 * time.Second);; <- c {
+          // Get latest
+          searchResult, err := client.Search(indexName).
+          Index(indexName).
+          Query(elastic.NewMatchAllQuery()).
+          Sort("@timestamp", false).
+          Size(1).
+          Do(ctx)
+
+          last := searchResult.Each(reflect.TypeOf(e))[0]
+          events <- fmt.Sprintf("latest %s", last.(Event).Time)
+          lastTime := last.(Event).Time
+          lastTime = lastTime.Add(time.Millisecond)
+
+          query := elastic.NewRangeQuery("@timestamp").From(lastTime).To("now")
+          searchResult, err = client.Search().
+          Index(indexName).
           Query(query).   // specify the query
           Pretty(true).       // pretty print request and response JSON
           Do(ctx)             // execute
@@ -39,7 +56,6 @@ func Loop(events chan<- string) {
         // Handle error
           panic(err)
         }
-        var e Event
         for _, item := range searchResult.Each(reflect.TypeOf(e)) {
             parseEvent(events, item.(Event))
         }
@@ -50,6 +66,6 @@ func parseEvent(events chan<- string, e Event) {
     r := regexp.MustCompile("COMMAND=.*$")
     match := r.FindString(e.Message)
     if match != "" {
-        events <- fmt.Sprintf("time: %s message: %s\n", e.Time, e.Message)
+        events <- fmt.Sprintf("time: %s command: %s\n", e.Time, match)
     }
 }
