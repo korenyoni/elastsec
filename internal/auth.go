@@ -2,6 +2,7 @@ package auth
 
 import (
     "os"
+    "encoding/json"
     "fmt"
     "context"
     "reflect"
@@ -39,24 +40,25 @@ func Loop(events chan<- string) {
     Size(1).
     Do(ctx)
 
-    last := searchResult.Each(reflect.TypeOf(e))[0]
-    events <- fmt.Sprintf("latest %s", last.(Event).Time)
-    lastTime := last.(Event).Time
+    lastItem := searchResult.Each(reflect.TypeOf(e))[0]
     // range for last 10 seconds
     for c := time.Tick(10 * time.Second);; <- c {
-          query := elastic.NewRangeQuery("@timestamp").From(lastTime).To("now")
+          query := elastic.NewRangeQuery("@timestamp").From(lastItem.(Event).Time.Add(time.Millisecond)).To("now")
           searchResult, err = client.Search().
           Index(indexName).
           Query(query).   // specify the query
+          Sort("@timestamp",true).
           Pretty(true).       // pretty print request and response JSON
           Do(ctx)             // execute
         if err != nil {
         // Handle error
           panic(err)
         }
-        for _, item := range searchResult.Each(reflect.TypeOf(e)) {
-            parseEvent(events, item.(Event))
-            lastTime = item.(Event).Time
+        array := searchResult.Hits.Hits
+        for _, hit := range array {
+            json.Unmarshal(*hit.Source, &e)
+            parseEvent(events, e)
+            lastItem = e
         }
     }
 }
