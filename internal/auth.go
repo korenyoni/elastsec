@@ -5,7 +5,7 @@ import (
     "fmt"
     "context"
     "reflect"
-    "strings"
+    "regexp"
     "time"
     "github.com/olivere/elastic"
 )
@@ -47,7 +47,9 @@ func Loop(events chan<- string) {
 }
 
 func parseEvent(events chan<- string, e Event) {
-    if strings.Contains(e.Message, "COMMAND") {
+    r := regexp.MustCompile("COMMAND=.*$")
+    match := r.FindString(e.Message)
+    if match != "" {
         events <- fmt.Sprintf("time: %s message: %s\n", e.Time, e.Message)
     }
 }
