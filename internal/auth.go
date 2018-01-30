@@ -31,21 +31,19 @@ func Loop(events chan<- string) {
     defer client.Stop()
 
     var e Event
+    // Get latest
+    searchResult, err := client.Search(indexName).
+    Index(indexName).
+    Query(elastic.NewMatchAllQuery()).
+    Sort("@timestamp", false).
+    Size(1).
+    Do(ctx)
+
+    last := searchResult.Each(reflect.TypeOf(e))[0]
+    events <- fmt.Sprintf("latest %s", last.(Event).Time)
+    lastTime := last.(Event).Time
     // range for last 10 seconds
     for c := time.Tick(10 * time.Second);; <- c {
-          // Get latest
-          searchResult, err := client.Search(indexName).
-          Index(indexName).
-          Query(elastic.NewMatchAllQuery()).
-          Sort("@timestamp", false).
-          Size(1).
-          Do(ctx)
-
-          last := searchResult.Each(reflect.TypeOf(e))[0]
-          events <- fmt.Sprintf("latest %s", last.(Event).Time)
-          lastTime := last.(Event).Time
-          lastTime = lastTime.Add(time.Millisecond)
-
           query := elastic.NewRangeQuery("@timestamp").From(lastTime).To("now")
           searchResult, err = client.Search().
           Index(indexName).
@@ -58,6 +56,7 @@ func Loop(events chan<- string) {
         }
         for _, item := range searchResult.Each(reflect.TypeOf(e)) {
             parseEvent(events, item.(Event))
+            lastTime = item.(Event).Time
         }
     }
 }
