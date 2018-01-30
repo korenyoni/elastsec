@@ -4,9 +4,18 @@ import (
     "os"
     "fmt"
     "context"
+    "reflect"
+    "strings"
     "time"
     "github.com/olivere/elastic"
 )
+
+type Event struct {
+    Host    string    `json:"beat.hostname"`
+    Message string    `json:"message"`
+    Time    time.Time `json:"@timestamp"`
+}
+
 
 func Loop(events chan<- string) {
     ctx := context.Background()
@@ -19,7 +28,7 @@ func Loop(events chan<- string) {
     defer client.Stop()
 
     // range for last 10 seconds
-    for x := range time.Tick(10 * time.Second) {
+    for _ = range time.Tick(10 * time.Second) {
           query := elastic.NewRangeQuery("@timestamp").From("now-10s").To("now")
           searchResult, err := client.Search().
           Index("filebeat*").
@@ -30,7 +39,15 @@ func Loop(events chan<- string) {
         // Handle error
           panic(err)
         }
-        events <- fmt.Sprintf("%d hits, ", searchResult.TotalHits()) + x.String()
+        var e Event
+        for _, item := range searchResult.Each(reflect.TypeOf(e)) {
+            parseEvent(events, item.(Event))
+        }
     }
 }
 
+func parseEvent(events chan<- string, e Event) {
+    if strings.Contains(e.Message, "COMMAND") {
+        events <- fmt.Sprintf("time: %s message: %s\n", e.Time, e.Message)
+    }
+}
