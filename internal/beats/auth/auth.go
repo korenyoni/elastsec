@@ -1,9 +1,9 @@
 package auth
 
 import (
-    "../looper"
-    "../errors"
-    "../event"
+    "../../looper"
+    "../../errors"
+    "../../event"
     "fmt"
     "log"
     "strings"
@@ -17,7 +17,7 @@ const (
 func Loop(events chan<- event.Event) {
     eventBus := make(chan event.Event)
 
-    go looper.Loop(eventBus, "filebeat*")
+    go looper.Loop(eventBus, indexName, nil)
 
     for event := range eventBus {
         replaceMessage(events, event)

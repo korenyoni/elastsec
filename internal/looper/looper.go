@@ -13,7 +13,7 @@ import (
     "github.com/olivere/elastic"
 )
 
-func Loop(events chan<- event.Event, indexName string) {
+func Loop(events chan<- event.Event, indexName string, filter elastic.Query) {
     ctx := context.Background()
 
     // create client
@@ -28,9 +28,13 @@ func Loop(events chan<- event.Event, indexName string) {
 
     var e event.Event
     // Get latest
+    query := elastic.NewBoolQuery().Must(elastic.NewMatchAllQuery())
+    if filter != nil {
+        query = query.Filter(filter)
+    }
     searchResult, err := client.Search(indexName).
     Index(indexName).
-    Query(elastic.NewMatchAllQuery()).
+    Query(query).
     Sort("@timestamp", false).
     Size(1).
     Do(ctx)
@@ -38,7 +42,13 @@ func Loop(events chan<- event.Event, indexName string) {
     lastItem := searchResult.Each(reflect.TypeOf(e))[0]
     // range for last 10 seconds
     for c := time.Tick(10 * time.Second);; <- c {
-          query := elastic.NewRangeQuery("@timestamp").From(lastItem.(event.Event).Time.Add(time.Millisecond)).To("now")
+          query := elastic.NewBoolQuery().Must(
+              elastic.NewRangeQuery("@timestamp").
+              From(lastItem.(event.Event).Time.Add(time.Millisecond)).
+              To("now"))
+          if filter != nil {
+              query = query.Filter(filter)
+          }
           searchResult, err = client.Search().
           Index(indexName).
           Query(query).   // specify the query
