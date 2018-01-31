@@ -2,6 +2,7 @@ package looper
 
 import (
     "../errors"
+    "../event"
     "log"
     "os"
     "encoding/json"
@@ -12,13 +13,7 @@ import (
     "github.com/olivere/elastic"
 )
 
-type Event struct {
-    Host    string    `json:"beat.hostname"`
-    Message string    `json:"message"`
-    Time    time.Time `json:"@timestamp"`
-}
-
-func Loop(events chan<- Event, indexName string) {
+func Loop(events chan<- event.Event, indexName string) {
     ctx := context.Background()
 
     // create client
@@ -31,7 +26,7 @@ func Loop(events chan<- Event, indexName string) {
     }
     defer client.Stop()
 
-    var e Event
+    var e event.Event
     // Get latest
     searchResult, err := client.Search(indexName).
     Index(indexName).
@@ -43,7 +38,7 @@ func Loop(events chan<- Event, indexName string) {
     lastItem := searchResult.Each(reflect.TypeOf(e))[0]
     // range for last 10 seconds
     for c := time.Tick(10 * time.Second);; <- c {
-          query := elastic.NewRangeQuery("@timestamp").From(lastItem.(Event).Time.Add(time.Millisecond)).To("now")
+          query := elastic.NewRangeQuery("@timestamp").From(lastItem.(event.Event).Time.Add(time.Millisecond)).To("now")
           searchResult, err = client.Search().
           Index(indexName).
           Query(query).   // specify the query
