@@ -39,7 +39,8 @@ func replaceMessage(events chan<- event.Event, e event.Event) {
         if matchUser == "" {
             log.Fatal(errors.CreateMatchError(*user,"message"))
         }
-        e.Message = fmt.Sprintf("time: %s command: %s, user: %s\n", e.Time,matchCommand,matchUser)
+        e.Message = fmt.Sprintf("command: %s, user: %s\n", matchCommand,matchUser)
+        e.Type = "Priviledge Escalation"
         events <- e
     }
 }
