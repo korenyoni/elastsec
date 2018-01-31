@@ -1,12 +1,10 @@
-package auth
+package looper
 
 import (
     "os"
     "encoding/json"
-    "fmt"
     "context"
     "reflect"
-    "regexp"
     "time"
     "github.com/olivere/elastic"
 )
@@ -17,11 +15,7 @@ type Event struct {
     Time    time.Time `json:"@timestamp"`
 }
 
-const (
-    indexName   = "filebeat*"
-)
-
-func Loop(events chan<- string) {
+func Loop(events chan<- Event, indexName string) {
     ctx := context.Background()
 
     // create client
@@ -57,16 +51,9 @@ func Loop(events chan<- string) {
         array := searchResult.Hits.Hits
         for _, hit := range array {
             json.Unmarshal(*hit.Source, &e)
-            parseEvent(events, e)
+            events <- e
             lastItem = e
         }
     }
 }
 
-func parseEvent(events chan<- string, e Event) {
-    r := regexp.MustCompile("COMMAND=.*$")
-    match := r.FindString(e.Message)
-    if match != "" {
-        events <- fmt.Sprintf("time: %s command: %s\n", e.Time, match)
-    }
-}
