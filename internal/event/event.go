@@ -4,9 +4,13 @@ import (
     "time"
 )
 
+type Beat struct {
+    Host    string      `json:"hostname"`
+}
+
 type Event struct {
-    Host    string    `json:"beat.hostname"`
-    Message string    `json:"message"`
-    Time    time.Time `json:"@timestamp"`
-    EventType string
+    Message string      `json:"message"`
+    Time    time.Time   `json:"@timestamp"`
+    Beat    Beat        `json:"beat"`
+    Type    string
 }

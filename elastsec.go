@@ -12,6 +12,7 @@ func main() {
     go auth.Loop(eventBus)
 
     for event := range eventBus {
-        fmt.Println(event.Message)
+        fmt.Printf("New `%s` event on machine `%s` at `%s`: `%s`\n",
+        event.Type, event.Beat.Host, event.Time, event.Message)
     }
 }
