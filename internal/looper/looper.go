@@ -1,11 +1,13 @@
 package looper
 
 import (
+    "../errors"
     "os"
     "encoding/json"
     "context"
     "reflect"
     "time"
+    "strings"
     "github.com/olivere/elastic"
 )
 
@@ -21,6 +23,9 @@ func Loop(events chan<- Event, indexName string) {
     // create client
     client, err := elastic.NewClient(elastic.SetURL(os.Getenv("ES_ADDR")), elastic.SetSniff(false))
     if err != nil {
+        if strings.Contains(err.Error(), "no Elasticsearch node available") {
+            err = errors.CreateConnectionError()
+        }
       panic(err)
     }
     defer client.Stop()
