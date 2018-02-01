@@ -62,6 +62,7 @@ func Loop(events chan<- event.Event, indexName string, filter elastic.Query) {
         array := searchResult.Hits.Hits
         for _, hit := range array {
             json.Unmarshal(*hit.Source, &e)
+            e.Source = hit.Source
             events <- e
             lastItem = e
         }

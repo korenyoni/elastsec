@@ -1,4 +1,4 @@
-package kernel
+package file_integrity
 
 import (
     "../../looper"
@@ -13,7 +13,7 @@ const (
 func Loop(events chan<- event.Event) {
     eventBus := make(chan event.Event)
 
-    go looper.Loop(eventBus, indexName, elastic.NewTermQuery("metricset.name","kernel"))
+    go looper.Loop(eventBus, indexName, elastic.NewTermQuery("metricset.name","file"))
 
     for event := range eventBus {
         events <- event

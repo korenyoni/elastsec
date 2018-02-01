@@ -2,6 +2,7 @@ package event
 
 import (
     "time"
+    "encoding/json"
 )
 
 type Beat struct {
@@ -13,4 +14,5 @@ type Event struct {
     Time    time.Time   `json:"@timestamp"`
     Beat    Beat        `json:"beat"`
     Type    string
+    Source  *json.RawMessage
 }
