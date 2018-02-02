@@ -39,7 +39,8 @@ Furthermore it's more feasible to create machine-oriented event data by redoing 
   - /etc
 
 ```
-4. `./elastsec`
+4. In filebeat.yml, under `filebeat.prospectors`, add: `scan_frequency: 1s`
+5. `./elastsec`
 
 ## Scope
 
