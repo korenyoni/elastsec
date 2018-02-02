@@ -11,7 +11,9 @@ Furthermore it's more feasible to create machine-oriented event data by redoing 
 
 ## Usage
 
-Set `ES_ADDR` to your ElasticSearch address.
+1. Set `ES_ADDR` to your ElasticSearch address.
+2. Add `-w /etc/ -p wa` to your auditbeat.yml
+3. `./elastsec`
 
 ## Scope
 
