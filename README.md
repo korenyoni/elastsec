@@ -40,7 +40,7 @@ Furthermore it's more feasible to create machine-oriented event data by redoing 
 
 ```
 4. In filebeat.yml, under `filebeat.prospectors`, add: `scan_frequency: 1s`
-5. `./elastsec`
+5. `make && ./elastsec`
 
 ## Scope
 
