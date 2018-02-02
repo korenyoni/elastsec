@@ -24,7 +24,7 @@ func Loop(events chan<- event.Event) {
         json.Unmarshal(*event.Source, &source)
         audit := source["audit"]
         auditPretty,_ := json.MarshalIndent(audit,"","  ")
-        event.Message = fmt.Sprintf("%s",auditPretty)
+        event.Message = fmt.Sprintf("%s\n%s",event.Time,auditPretty)
         event.Type = "File Integrity Change"
         events <- event
     }
