@@ -55,4 +55,4 @@ Furthermore it's more feasible to create machine-oriented event data by redoing 
 2. [Filebeat](https://www.elastic.co/products/beats/filebeat)
 3. [Auditbeat](https://www.elastic.co/products/beats/auditbeat)
 
-You will need a version of Go, relatively recent to `1.9.3` to build the binary yourself. A glide configuration and lock-file is included.
+You will need a version of Go relatively recent to `1.9.3` to build the binary yourself. A glide configuration and lock-file is included.
