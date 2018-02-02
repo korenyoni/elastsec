@@ -1,6 +1,13 @@
 # ElastSec
 
-Connects to Elasticsearch, parses heartbeat writes, creates human readable alerts, focusing on what machine the event came from.
+Connects to Elasticsearch, parses heartbeat writes, and creates the following host-oriented alerts:
+
+1. New Priviledge Escalation
+2. Failed file change attempt
+3. Failed file access attempt
+4. File permissions change
+5. New SSH connection
+6. Failed SSH connection attempt (password, invalid user)
 
 ## Motivation
 
@@ -42,9 +49,10 @@ Furthermore it's more feasible to create machine-oriented event data by redoing 
 4. In filebeat.yml, under `filebeat.prospectors`, add: `scan_frequency: 1s`
 5. `make && ./elastsec`
 
-## Scope
+## Requirements
 
-Beats:
+1. [Elasticsearch](https://www.elastic.co/products/elasticsearch)
+2. [Filebeat](https://www.elastic.co/products/beats/filebeat)
+3. [Auditbeat](https://www.elastic.co/products/beats/auditbeat)
 
-1. [Filebeat](https://www.elastic.co/products/beats/filebeat)
-2. [Auditbeat](https://www.elastic.co/products/beats/auditbeat)
+You will need a version of Go, relatively recent to `1.9.3` to build the binary yourself. A glide configuration and lock-file is included.
