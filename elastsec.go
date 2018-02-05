@@ -17,11 +17,9 @@ func main() {
     go filechange_attempt.Loop(eventBus)
 
     for event := range eventBus {
-        stdoutTitle := fmt.Sprintf("New `%s` event on host `%s`: %s",
-        event.Type, event.Beat.Host, event.Message)
-        notifyTitle := fmt.Sprintf("New `%s` event on host `%s`",
+        title := fmt.Sprintf("New `%s` event on host `%s`",
         event.Type, event.Beat.Host)
-        fmt.Printf("%s\n\n",stdoutTitle)
-        notify.SendSlack(event,notifyTitle)
+        fmt.Printf("%s %s\n\n",title,event.Message)
+        notify.SendSlack(event,title)
     }
 }

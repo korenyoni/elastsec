@@ -4,7 +4,7 @@ import (
     "../../looper"
     "../../event"
     "github.com/olivere/elastic"
-    "encoding/json"
+    "github.com/tidwall/gjson"
     "fmt"
 )
 
@@ -20,11 +20,10 @@ func Loop(events chan<- event.Event) {
 
     for event := range eventBus {
 
-        var source map[string]interface{}
-        json.Unmarshal(*event.Source, &source)
-        audit := source["audit"]
-        auditPretty,_ := json.MarshalIndent(audit,"","  ")
-        event.Message = fmt.Sprintf("%s\n%s",event.Time,auditPretty)
+        jsonData := *event.Source
+        user := gjson.GetBytes(jsonData,"actor")
+        data := fmt.Sprintf("%s\n",user.String())
+        event.Message = fmt.Sprintf("%s\n%s",event.Time,data)
         event.Type = "File Integrity Change"
         events <- event
     }

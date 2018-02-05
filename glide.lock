@@ -1,5 +1,5 @@
 hash: 814c066bdc2dc5d8fe0d2f0fcb6ac6b67cf90bff2123e48153e47451c4658ca6
-updated: 2018-02-05T09:33:38.16872428-05:00
+updated: 2018-02-05T10:27:56.06134823-05:00
 imports:
 - name: github.com/ashwanthkumar/slack-go-webhook
   version: 294f07484c855dcbfb409e3e95c04ef7c5cae6ef
@@ -20,6 +20,10 @@ imports:
   version: 8e3aed27fe49f7fdc765dad067845f600fc984e8
 - name: github.com/pkg/errors
   version: 30136e27e2ac8d167177e8a583aa4c3fea5be833
+- name: github.com/tidwall/gjson
+  version: 87033efcaec6215741137e8ca61952c53ef2685d
+- name: github.com/tidwall/match
+  version: 1731857f09b1f38450e2c12409748407822dc6be
 - name: golang.org/x/net
   version: 2fb46b16b8dda405028c50f7c7f0f9dd1fa6bfb1
   subpackages:
