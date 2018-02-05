@@ -7,6 +7,7 @@ import (
     "./internal/beats/filechange_attempt"
     "./internal/event"
     "./internal/notify"
+    "./internal/infoexport"
 )
 
 func main() {
@@ -17,8 +18,7 @@ func main() {
     go filechange_attempt.Loop(eventBus)
 
     for event := range eventBus {
-        title := fmt.Sprintf("New `%s` event on host `%s`",
-        event.Type, event.Beat.Host)
+        title := infoexport.GetTitle(event)
         fmt.Printf("%s %s\n\n",title,event.Message)
         notify.SendSlack(event,title)
     }

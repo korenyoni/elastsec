@@ -3,8 +3,8 @@ package file_integrity
 import (
     "../../looper"
     "../../event"
+    "../../infoexport"
     "github.com/olivere/elastic"
-    "github.com/tidwall/gjson"
     "fmt"
 )
 
@@ -20,9 +20,7 @@ func Loop(events chan<- event.Event) {
 
     for event := range eventBus {
 
-        jsonData := *event.Source
-        user := gjson.GetBytes(jsonData,"actor")
-        data := fmt.Sprintf("%s\n",user.String())
+        data := infoexport.GetFileEventData(event)
         event.Message = fmt.Sprintf("%s\n%s",event.Time,data)
         event.Type = "File Integrity Change"
         events <- event

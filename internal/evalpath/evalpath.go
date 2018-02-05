@@ -3,7 +3,6 @@ package evalpath
 import (
     "path"
     "strings"
-    "fmt"
 )
 
 func Eval(cwd string, parentPath string, childPath string) string {

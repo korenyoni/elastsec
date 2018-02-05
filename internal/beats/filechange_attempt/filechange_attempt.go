@@ -3,9 +3,8 @@ package filechange_attempt
 import (
     "../../looper"
     "../../event"
-    "../../evalpath"
+    "../../infoexport"
     "github.com/olivere/elastic"
-    "github.com/tidwall/gjson"
     "fmt"
 )
 
@@ -24,14 +23,7 @@ func Loop(events chan<- event.Event) {
 
     for event := range eventBus {
 
-        jsonData := *event.Source
-        user := gjson.GetBytes(jsonData,"audit.kernel.actor.attrs.uid")
-        action := gjson.GetBytes(jsonData,"audit.kernel.action")
-        cwd := gjson.GetBytes(jsonData,"audit.kernel.data.cwd")
-        parentPath := gjson.GetBytes(jsonData,"audit.kernel.paths.0.name")
-        childPath := gjson.GetBytes(jsonData,"audit.kernel.paths.1.name")
-        path := evalpath.Eval(cwd.String(),parentPath.String(), childPath.String())
-        data := fmt.Sprintf("%s\n%s\n%s\n",user.String(),action.String(),path)
+        data := infoexport.GetFileEventData(event)
         event.Message = fmt.Sprintf("%s\n%s",event.Time,data)
         event.Type = "Failed File Change"
         events <- event
