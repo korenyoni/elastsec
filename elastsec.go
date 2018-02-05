@@ -16,7 +16,7 @@ func main() {
     go filechange_attempt.Loop(eventBus)
 
     for event := range eventBus {
-        fmt.Printf("New `%s` event on host `%s`: %s\n",
+        fmt.Printf("New `%s` event on host `%s`: %s\n\n",
         event.Type, event.Beat.Host, event.Message)
     }
 }

@@ -22,8 +22,8 @@ func Loop(events chan<- event.Event) {
 
 func replaceMessage(events chan<- event.Event, e event.Event) {
     ssh := regexp.MustCompile("sshd")
-    acceptedPassword := regexp.MustCompile("Accepted password")
-    disconnect := regexp.MustCompile("session closed")
+    acceptedPassword := regexp.MustCompile("Accepted")
+    disconnect := regexp.MustCompile("Disconnected from")
     failedPassword := regexp.MustCompile("Failed password")
     invalidUser := regexp.MustCompile("Invalid user.*from")
     authFailure := regexp.MustCompile("authentication failure")
