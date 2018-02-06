@@ -2,6 +2,7 @@ package notify
 
 import (
     "../event"
+    "../constants"
     "os"
     "log"
     "fmt"
@@ -9,9 +10,9 @@ import (
 )
 
 func SendSlack(e event.Event, title string) {
-    webhookUrl := os.Getenv("ESEC_SLACK_WEBHOOK")
+    webhookUrl := os.Getenv(constants.SlackHookEnv)
     if webhookUrl == "" {
-        log.Fatal("Error: No ESEC_SLACK_WEBHOOK set")
+        log.Fatal(fmt.Sprintf("Error: No %s set",constants.SlackHookEnv))
     }
 
     attachment1 := slack.Attachment {}

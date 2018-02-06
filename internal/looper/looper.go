@@ -3,6 +3,7 @@ package looper
 import (
     "../errors"
     "../event"
+    "../constants"
     "log"
     "os"
     "encoding/json"
@@ -17,7 +18,7 @@ func Loop(events chan<- event.Event, indexName string, filter elastic.Query) {
     ctx := context.Background()
 
     // create client
-    client, err := elastic.NewClient(elastic.SetURL(os.Getenv("ES_ADDR")), elastic.SetSniff(false))
+    client, err := elastic.NewClient(elastic.SetURL(os.Getenv(constants.ElasticAddressEnv)), elastic.SetSniff(false))
     if err != nil {
         if strings.Contains(err.Error(), "no Elasticsearch node available") {
             log.Fatal(errors.CreateConnectionError())
