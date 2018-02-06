@@ -3,6 +3,7 @@ package auth
 import (
     "../../looper"
     "../../event"
+    "../../constants"
     "regexp"
 )
 
@@ -41,25 +42,25 @@ func replaceMessage(events chan<- event.Event, e event.Event) {
     matchCommand := command.FindString(e.Message)
 
     if matchSsh != "" && matchAcceptedPassword != "" {
-        e.Type = "Accepted SSH connection"
+        e.Type = constants.SSHAcceptedConnection
         events <- e
     } else if matchSsh != "" && matchDisconnect != "" {
-        e.Type = "SSH Disconnect"
+        e.Type = constants.SSHDisconnect
         events <- e
     } else if matchSsh != "" && matchFailedPassword != "" {
-        e.Type = "Failed SSH connection (invalid password)"
+        e.Type = constants.SSHFailedPass
         events <- e
     } else if matchSsh != "" && matchInvalidUser != "" {
-        e.Type = "Failed SSH connection (invalid user)"
+        e.Type = constants.SSHInvalidUser
         events <- e
     } else if matchAuthFailure != "" && matchSsh == "" {
-        e.Type = "Authentication Failure"
+        e.Type = constants.AuthFailure
         events <- e
     } else if matchNotInSudoers != "" {
-        e.Type = "Unauthorized sudo attempt"
+        e.Type = constants.NotSudoer
         events <- e
     } else if matchCommand != "" {
-        e.Type = "Priviledge Escalation"
+        e.Type = constants.PrivEscalation
         events <- e
     }
 }
