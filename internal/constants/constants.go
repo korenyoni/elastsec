@@ -12,4 +12,5 @@ const (
     PrivEscalation = "Priviledge Escalation"
     FileIntegrityChange = "File Integrity Change"
     FailedFileChange = "Failed File Change"
+    AggregationEvent = "Aggregation Event"
 )
