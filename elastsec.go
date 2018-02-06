@@ -15,7 +15,7 @@ import (
 func main() {
     eventBus := make(chan event.Event)
     var a aggregator.Aggregator
-    a.SupressedCount= make(map[string]int)
+    a.SupressedCount = make(map[aggregator.Key]int)
 
     go auth.Loop(eventBus)
     go file_integrity.Loop(eventBus)

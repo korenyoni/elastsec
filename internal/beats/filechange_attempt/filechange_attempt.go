@@ -4,6 +4,7 @@ import (
     "../../looper"
     "../../event"
     "../../infoexport"
+    "../../constants"
     "github.com/olivere/elastic"
     "fmt"
 )
@@ -25,7 +26,7 @@ func Loop(events chan<- event.Event) {
 
         data := infoexport.GetFileEventData(event)
         event.Message = fmt.Sprintf("%s\n%s",event.Time,data)
-        event.Type = "Failed File Change"
+        event.Type = constants.FailedFileAccess
         events <- event
     }
 }

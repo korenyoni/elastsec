@@ -11,6 +11,8 @@ const (
     NotSudoer = "Unauthorized sudo attempt"
     PrivEscalation = "Priviledge Escalation"
     FileIntegrityChange = "File Integrity Change"
-    FailedFileChange = "Failed File Change"
+    FailedFileAccess = "Failed File Access"
     AggregationEvent = "Aggregation Event"
+    FileMetricSet = "audit.file"
+    KernelMetricSet = "audit.kernel"
 )

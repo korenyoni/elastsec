@@ -6,23 +6,27 @@ import (
     "log"
     "../event"
     "../evalpath"
+    "../constants"
     "encoding/json"
     "github.com/tidwall/gjson"
 )
 
 func GetTitle(e event.Event) string {
-    title := fmt.Sprintf("New `%s` event on host `%s`",
-    e.Type, e.Beat.Host)
-    return title
+    if e.Type != constants.AggregationEvent {
+        title := fmt.Sprintf("New `%s` event on host `%s`",
+        e.Type, e.Beat.Host)
+        return title
+    }
+    return "Previous suppresion of events:"
 }
 
 func GetFileEventData(e event.Event) string {
     jsonData := *e.Source
 
-    metricset := "audit.kernel"
+    metricset := constants.KernelMetricSet
     var data map[string]interface{}
-    if gjson.GetBytes(jsonData,"audit.kernel").String() == "" {
-        metricset = "audit.file"
+    if gjson.GetBytes(jsonData,constants.KernelMetricSet).String() == "" {
+        metricset = constants.FileMetricSet
         owner := gjson.GetBytes(jsonData,metricset + ".owner")
         group := gjson.GetBytes(jsonData,metricset + ".group")
         path := gjson.GetBytes(jsonData,metricset + ".path")
