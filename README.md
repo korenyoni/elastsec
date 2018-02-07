@@ -18,7 +18,7 @@ Furthermore it's more feasible to create machine-oriented event data by redoing 
 
 ## Usage
 
-1. Set `ES_ADDR` to your ElasticSearch address and `ESEC_SLACK_WEBHOOK` to your slack webhook.
+1. Set `ES_ADDR` to your ElasticSearch address, `ESEC_SLACK_WEBHOOK` to your slack webhook, and `STMP_SEND_ADDR` to the email you would like to notify.
 2. Add `-w /etc/ -p wa` to your auditbeat.yml
 3. Use the following auditbeat configuration:
 ```
@@ -54,5 +54,6 @@ Furthermore it's more feasible to create machine-oriented event data by redoing 
 1. [Elasticsearch](https://www.elastic.co/products/elasticsearch)
 2. [Filebeat](https://www.elastic.co/products/beats/filebeat)
 3. [Auditbeat](https://www.elastic.co/products/beats/auditbeat)
+4. `sendmail` configured via ssmtp or another SMTP server.
 
 You will need a version of Go relatively recent to `1.9.3` to build the binary yourself. A glide configuration and lock-file is included.
