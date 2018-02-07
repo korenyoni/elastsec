@@ -53,9 +53,6 @@ func (a Aggregator) Consume(e event.Event) (event.Event, bool) {
         return e, true
     }
     key := genKey(e)
-    if e.Type == constants.FailedFileAccess {
-        key.Thing = ""
-    }
     count, ok := a.SupressedCount[key]
     if ok {
         count = count + 1
@@ -77,15 +74,15 @@ func genKey(e event.Event) Key {
         userMatch := userRegex.FindString(e.Message)
         splitRegex := regexp.MustCompile(`:\s+`)
         userSplitMatch := splitRegex.FindString(userMatch)
-        pathRegex := regexp.MustCompile(`"path":\s+".*"`)
-        pathMatch := pathRegex.FindString(e.Message)
-        pathSplitMatch := splitRegex.FindString(pathMatch)
+        howRegex := regexp.MustCompile(`"path":\s+".*"`)
+        howMatch := howRegex.FindString(e.Message)
+        howSplitMatch := splitRegex.FindString(howMatch)
         if userSplitMatch != "" {
             k.User = splitRegex.Split(userMatch,2)[1]
             k.User = strings.Trim(k.User,quoteEscape)
         }
-        if pathSplitMatch != "" {
-            k.Thing = splitRegex.Split(pathMatch,2)[1]
+        if howSplitMatch != "" {
+            k.Thing = splitRegex.Split(howMatch,2)[1]
             k.Thing = strings.Trim(k.Thing,quoteEscape)
         }
         return k
