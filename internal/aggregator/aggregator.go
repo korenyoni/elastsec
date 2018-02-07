@@ -74,7 +74,7 @@ func genKey(e event.Event) Key {
         userMatch := userRegex.FindString(e.Message)
         splitRegex := regexp.MustCompile(`:\s+`)
         userSplitMatch := splitRegex.FindString(userMatch)
-        howRegex := regexp.MustCompile(`"path":\s+".*"`)
+        howRegex := regexp.MustCompile(`"how":\s+".*"`)
         howMatch := howRegex.FindString(e.Message)
         howSplitMatch := splitRegex.FindString(howMatch)
         if userSplitMatch != "" {
