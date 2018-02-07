@@ -54,7 +54,11 @@ func (a Aggregator) Consume(e event.Event) (event.Event, bool) {
     }
     key := genKey(e)
     if e.Type == constants.FailedFileAccess {
+<<<<<<< HEAD
         key.Thing = ""
+=======
+        key.Path = ""
+>>>>>>> 8407378ccb996cc79d8314652f765d1a0adda015
     }
     count, ok := a.SupressedCount[key]
     if ok {
