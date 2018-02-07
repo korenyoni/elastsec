@@ -18,9 +18,10 @@ Furthermore it's more feasible to create machine-oriented event data by redoing 
 
 ## Usage
 
-1. Set `ES_ADDR` to your ElasticSearch address, `ESEC_SLACK_WEBHOOK` to your slack webhook, and `STMP_SEND_ADDR` to the email you would like to notify. `ESEC_AGG_DURATION` and `ESEC_EMAIL_DURATION` can be optionally set (e.g. `2hr`,`24h`).
-2. Add `-w /etc/ -p wa` to your auditbeat.yml
-3. Use the following auditbeat configuration:
+1. Set `ES_ADDR` to your ElasticSearch address, `ESEC_SLACK_WEBHOOK` to your slack webhook, and `STMP_SEND_ADDR` to the email you would like to notify.
+2. `ESEC_AGG_DURATION` and `ESEC_EMAIL_DURATION` can be optionally set (e.g. `2hr`,`24h`). It is recommended to add a couple extra more seconds for email as it will capture the aggregation events.
+3. Add `-w /etc/ -p wa` to your auditbeat.yml
+4. Use the following auditbeat configuration:
 ```
 - module: audit
   metricsets: [kernel]
@@ -46,8 +47,8 @@ Furthermore it's more feasible to create machine-oriented event data by redoing 
   - /etc
 
 ```
-4. In filebeat.yml, under `filebeat.prospectors`, add: `scan_frequency: 1s`
-5. `make && ./elastsec`
+5. In filebeat.yml, under `filebeat.prospectors`, add: `scan_frequency: 1s`
+6. `make && ./elastsec`
 
 ## Requirements
 
