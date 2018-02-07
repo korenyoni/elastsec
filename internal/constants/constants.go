@@ -3,6 +3,7 @@ package constants
 const (
     SlackHookEnv = "ESEC_SLACK_WEBHOOK"
     ElasticAddressEnv = "ES_ADDR"
+    SmtpSendAddress = "STMP_SEND_ADDR"
     SSHAcceptedConnection = "Accepted SSH connection"
     SSHDisconnect = "SSH Disconnect"
     SSHFailedPass = "Failed SSH connection (invalid password)"

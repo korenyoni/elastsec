@@ -14,6 +14,7 @@ import (
 
 func main() {
     eventBus := make(chan event.Event)
+    aggregatedEventBus := make(chan event.Event)
     var a aggregator.Aggregator
     a.SupressedCount = make(map[aggregator.Key]int)
 
@@ -22,12 +23,21 @@ func main() {
     go filechange_attempt.Loop(eventBus)
     go a.Loop(eventBus, time.Minute)
 
-    for event := range eventBus {
-        event, ok := a.Consume(event)
-        if ok {
-            title := infoexport.GetTitle(event)
-            fmt.Printf("%s %s\n\n",title,event.Message)
-            notify.SendSlack(event,title)
+    go func() {
+        for event := range eventBus {
+            event, ok := a.Consume(event)
+            if ok {
+                aggregatedEventBus <- event
+            }
         }
+    }()
+
+    email := notify.EmailInit(aggregatedEventBus, time.Minute)
+    go email.Loop()
+    for event := range aggregatedEventBus {
+        title := infoexport.GetTitle(event)
+        fmt.Printf("%s %s\n\n",title,event.Message)
+        notify.SendSlack(event,title)
+        email.Consume(event,title)
     }
 }
