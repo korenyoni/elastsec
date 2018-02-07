@@ -1,6 +1,8 @@
 package constants
 
 const (
+    EmailDurationEnv = "ESEC_EMAIL_DURATION"
+    AggDurationEnv = "ESEC_AGG_DURATION"
     SlackHookEnv = "ESEC_SLACK_WEBHOOK"
     ElasticAddressEnv = "ES_ADDR"
     SmtpSendAddress = "SMTP_SEND_ADDR"
