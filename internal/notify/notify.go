@@ -50,14 +50,12 @@ func EmailInit(events chan event.Event, window time.Duration) *Email {
 func (em *Email) Consume(e event.Event, title string) {
     eventMessage := []byte(fmt.Sprintf("%s\n%s\n",title,e.Message))
     em.Msg = append(em.Msg,eventMessage...)
-    fmt.Printf("Msg len: %d\n",len(em.Msg))
 }
 
 func (em *Email) Loop() {
     for range time.Tick(em.Window) {
-        fmt.Println("Tick")
         if len(em.Msg) > 0 {
-            fmt.Println("Sending Message")
+            fmt.Println("Sending Email...")
             err := em.sendMail()
             if err != nil {
                 log.Fatal(fmt.Sprintf("Error sending email: %s",err))
