@@ -54,6 +54,6 @@ Furthermore it's more feasible to create machine-oriented event data by redoing 
 1. [Elasticsearch](https://www.elastic.co/products/elasticsearch)
 2. [Filebeat](https://www.elastic.co/products/beats/filebeat)
 3. [Auditbeat](https://www.elastic.co/products/beats/auditbeat)
-4. `sendmail` configured via ssmtp or another SMTP server.
+4. `sendmail` configured via `ssmtp` (including revaliases) or another SMTP utility.
 
 You will need a version of Go relatively recent to `1.9.3` to build the binary yourself. A glide configuration and lock-file is included.
