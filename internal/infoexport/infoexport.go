@@ -5,6 +5,7 @@ import (
     "fmt"
     "log"
     "../event"
+    "../env"
     "../evalpath"
     "../constants"
     "encoding/json"
@@ -13,9 +14,12 @@ import (
 
 func GetTitle(e event.Event) string {
     if e.Type != constants.AggregationEvent {
-        title := fmt.Sprintf("New %s event on host `%s`",
+        if env.GetEnvName() != "" {
+            return fmt.Sprintf("New %s event on host `%s`, env `%s`",
+            e.Type, e.Beat.Host, env.GetEnvName())
+        }
+        return fmt.Sprintf("New %s event on host `%s`, env `%s`",
         e.Type, e.Beat.Host)
-        return title
     }
     return "Previous suppresion of events:"
 }

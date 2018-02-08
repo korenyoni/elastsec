@@ -7,6 +7,7 @@ import (
     "regexp"
     "strings"
     "encoding/json"
+    "../env"
     "../event"
     "../constants"
 )
@@ -31,6 +32,7 @@ type Key struct {
 type Instance struct {
     Key Key `json:"key"`
     Info Info `json:"info"`
+    Env string `json:"env"`
 }
 
 func (a Aggregator) Loop(events chan<- event.Event, window time.Duration) {
@@ -39,7 +41,7 @@ func (a Aggregator) Loop(events chan<- event.Event, window time.Duration) {
 
     for c := time.Tick(window);; <- c {
         for k,i := range a.SupressedCount {
-            instance := Instance{Key:k,Info:*i}
+            instance := Instance{Key:k,Info:*i,Env:env.GetEnvName()}
             js, err := json.MarshalIndent(&instance, "","\t")
             if err != nil {
                 log.Fatal("Error parsing aggregator event data")

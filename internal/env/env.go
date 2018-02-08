@@ -69,3 +69,8 @@ func GetSendEmailAddress() string {
     }
     return emailStr
 }
+
+func GetEnvName() string {
+    envName := os.Getenv(constants.EnvName)
+    return envName
+}
