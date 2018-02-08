@@ -110,7 +110,32 @@ func genKeyThing(e event.Event) (Key, string) {
         if userSplitMatch != "" {
             k.User = splitRegex.Split(userMatch,2)[1]
         }
-    } else if e.Type == constants.PrivEscalation {
+    } else if e.Type == constants.SSHAcceptedConnection || e.Type == constants.SSHFailedPass {
+        userRegex := regexp.MustCompile(`for\s+\w+`)
+        userMatch := userRegex.FindString(e.Message)
+        splitRegex := regexp.MustCompile(`\s`)
+        userSplitMatch := splitRegex.FindString(userMatch)
+        invalidUserRegex := regexp.MustCompile(`invalid\s+user`)
+        invalidUserMatch := invalidUserRegex.FindString(e.Message)
+        if userSplitMatch != "" {
+            k.User = splitRegex.Split(userMatch,2)[1]
+        }
+        if invalidUserMatch != "" {
+            userRegex := regexp.MustCompile(`user\s+\w+`)
+            userMatch := userRegex.FindString(e.Message)
+            if userSplitMatch != "" {
+                k.User = splitRegex.Split(userMatch,2)[1]
+            }
+        }
+    } else if e.Type == constants.SSHInvalidUser {
+        userRegex := regexp.MustCompile(`user\s+\w+`)
+        userMatch := userRegex.FindString(e.Message)
+        splitRegex := regexp.MustCompile(`\s`)
+        userSplitMatch := splitRegex.FindString(userMatch)
+        if userSplitMatch != "" {
+            k.User = splitRegex.Split(userMatch,2)[1]
+        }
+    }  else if e.Type == constants.PrivEscalation {
         userRegex := regexp.MustCompile(`sudo:\s+\w+`)
         userMatch := userRegex.FindString(e.Message)
         userSplitRegex := regexp.MustCompile(`\s+`)
