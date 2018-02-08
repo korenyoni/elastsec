@@ -2,9 +2,6 @@ package main
 
 import (
     "fmt"
-    "time"
-    "os"
-    "log"
     "./internal/beats/auth"
     "./internal/beats/file_integrity"
     "./internal/beats/filechange_attempt"
@@ -12,7 +9,7 @@ import (
     "./internal/notify"
     "./internal/infoexport"
     "./internal/aggregator"
-    "./internal/constants"
+    "./internal/env"
 )
 
 func main() {
@@ -24,7 +21,7 @@ func main() {
     go auth.Loop(eventBus)
     go file_integrity.Loop(eventBus)
     go filechange_attempt.Loop(eventBus)
-    go a.Loop(eventBus, getAggDuration())
+    go a.Loop(eventBus, env.GetAggDuration())
 
     go func() {
         for event := range eventBus {
@@ -35,7 +32,7 @@ func main() {
         }
     }()
 
-    email := notify.EmailInit(aggregatedEventBus, getEmailDuration())
+    email := notify.EmailInit(aggregatedEventBus, env.GetEmailDuration())
     go email.Loop()
     for event := range aggregatedEventBus {
         title := infoexport.GetTitle(event)
@@ -43,30 +40,4 @@ func main() {
         notify.SendSlack(event,title)
         email.Consume(event,title)
     }
-}
-
-func getAggDuration() time.Duration {
-    durationString := os.Getenv(constants.AggDurationEnv)
-    if durationString != "" {
-        duration, err := time.ParseDuration(durationString)
-        if err != nil {
-            log.Println("Invalid aggregator duration.")
-        } else {
-            return duration
-        }
-    }
-    return time.Hour
-}
-
-func getEmailDuration() time.Duration {
-    durationString := os.Getenv(constants.EmailDurationEnv)
-    if durationString != "" {
-    duration, err := time.ParseDuration(durationString)
-        if err != nil {
-            log.Println("Invalid email duration.")
-        } else {
-            return duration
-        }
-    }
-    return time.Hour
 }

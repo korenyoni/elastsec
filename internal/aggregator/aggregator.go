@@ -34,8 +34,8 @@ func (a Aggregator) Loop(events chan<- event.Event, window time.Duration) {
 
     for c := time.Tick(window);; <- c {
         for k,i := range a.SupressedCount {
-            keyJS, err := json.MarshalIndent(&k, "  ","")
-            infoJS, err := json.MarshalIndent(&i, "  ","")
+            keyJS, err := json.MarshalIndent(&k, "","\t")
+            infoJS, err := json.MarshalIndent(&i, "","\t")
             if err != nil {
                 log.Fatal("Error parsing aggregator event data")
             }

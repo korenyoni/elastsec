@@ -2,12 +2,11 @@ package notify
 
 import (
     "../event"
-    "../constants"
-    "os"
-    "os/exec"
+    "../env"
     "log"
     "fmt"
     "time"
+    "os/exec"
     "github.com/ashwanthkumar/slack-go-webhook"
 )
 
@@ -18,10 +17,7 @@ type Email struct {
 }
 
 func SendSlack(e event.Event, title string) {
-    webhookUrl := os.Getenv(constants.SlackHookEnv)
-    if webhookUrl == "" {
-        log.Fatal(fmt.Sprintf("Error: No %s set",constants.SlackHookEnv))
-    }
+    webhookUrl := env.GetSlackWebhook()
 
     attachment1 := slack.Attachment {}
     attachment1.AddField(slack.Field { Title: "Content", Value: e.Message })
@@ -39,12 +35,11 @@ func SendSlack(e event.Event, title string) {
 }
 
 func EmailInit(events chan event.Event, window time.Duration) *Email {
-    smtpSendAddress := os.Getenv(constants.SmtpSendAddress)
-    checkEmailEnv([]string{smtpSendAddress,constants.SmtpSendAddress})
+    sendAddress := env.GetSendEmailAddress()
 
     msg := make([]byte,0)
 
-    return &Email{Msg:msg,SendAddress:smtpSendAddress,Window:window}
+    return &Email{Msg:msg,SendAddress:sendAddress,Window:window}
 }
 
 func (em *Email) Consume(e event.Event, title string) {
@@ -62,14 +57,6 @@ func (em *Email) Loop() {
             }
         }
         em.Msg = make([]byte,0)
-    }
-}
-
-func checkEmailEnv(e ...[]string) {
-    for _,envVar := range e {
-        if envVar[0] == "" {
-            log.Fatal(fmt.Sprintf("Error: %s not set",envVar[1]))
-        }
     }
 }
 

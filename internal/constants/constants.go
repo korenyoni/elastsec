@@ -1,11 +1,13 @@
 package constants
 
 const (
+    ElasticAddressEnv = "ES_ADDR"
+    ElasticSniffEnv = "ES_SNIFF"
     EmailDurationEnv = "ESEC_EMAIL_DURATION"
     AggDurationEnv = "ESEC_AGG_DURATION"
     SlackHookEnv = "ESEC_SLACK_WEBHOOK"
-    ElasticAddressEnv = "ES_ADDR"
-    SmtpSendAddress = "SMTP_SEND_ADDR"
+    SendAddressEnv = "ESEC_SEND_ADDR"
+    EnvName = "ESEC_ENV_NAME"
     SSHAcceptedConnection = "Accepted SSH connection"
     SSHDisconnect = "SSH Disconnect"
     SSHFailedPass = "Failed SSH connection (invalid password)"

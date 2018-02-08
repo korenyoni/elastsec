@@ -13,7 +13,7 @@ import (
 
 func GetTitle(e event.Event) string {
     if e.Type != constants.AggregationEvent {
-        title := fmt.Sprintf("New `%s` event on host `%s`",
+        title := fmt.Sprintf("New %s event on host `%s`",
         e.Type, e.Beat.Host)
         return title
     }
@@ -59,7 +59,7 @@ func GetFileEventData(e event.Event) string {
         }
     }
 
-    jsonDataConcise, err := json.MarshalIndent(data,"  ","")
+    jsonDataConcise, err := json.MarshalIndent(data,"","\t")
     if err != nil {
         log.Fatal("Error encoding FileEvent data")
     }
