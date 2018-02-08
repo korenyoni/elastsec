@@ -16,21 +16,21 @@ type Aggregator struct {
 }
 
 type Info struct {
-    Count int
-    Things []string
+    Count int `json:"count"`
+    Things []string `json:"things"`
 }
 
 type Key struct {
     /* Obligatory */
-    Type string
-    Host string
+    Type string `json:"type"`
+    Host string `json:"host"`
     /* Optional */
-    User string
+    User string `json:"user"`
 }
 
 type Instance struct {
-    Key Key
-    Info Info
+    Key Key `json:"key"`
+    Info Info `json:"info"`
 }
 
 func (a Aggregator) Loop(events chan<- event.Event, window time.Duration) {
