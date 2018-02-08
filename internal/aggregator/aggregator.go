@@ -28,14 +28,19 @@ type Key struct {
     User string
 }
 
+type Instance struct {
+    Key Key
+    Info Info
+}
+
 func (a Aggregator) Loop(events chan<- event.Event, window time.Duration) {
     timer := time.NewTimer(window)
     defer timer.Stop()
 
     for c := time.Tick(window);; <- c {
         for k,i := range a.SupressedCount {
-            keyJS, err := json.MarshalIndent(&k, "","\t")
-            infoJS, err := json.MarshalIndent(&i, "","\t")
+            instance := Instance{Key:k,Info:*i}
+            js, err := json.MarshalIndent(&instance, "","\t")
             if err != nil {
                 log.Fatal("Error parsing aggregator event data")
             }
@@ -44,8 +49,8 @@ func (a Aggregator) Loop(events chan<- event.Event, window time.Duration) {
                     Beat: event.Beat{
                         Host: k.Host},
                     Type: constants.AggregationEvent,
-                    Message: fmt.Sprintf("supression of instance(s):\n%s\n%s",
-                    keyJS,infoJS)}
+                    Message: fmt.Sprintf("supression of instance(s):\n%s",
+                    js)}
                 events <- e
             }
             delete(a.SupressedCount,k)
