@@ -19,7 +19,7 @@ func main() {
     eventBus := make(chan event.Event)
     aggregatedEventBus := make(chan event.Event)
     var a aggregator.Aggregator
-    a.SupressedCount = make(map[aggregator.Key]int)
+    a.SupressedCount = make(map[aggregator.Key]*aggregator.Info)
 
     go auth.Loop(eventBus)
     go file_integrity.Loop(eventBus)

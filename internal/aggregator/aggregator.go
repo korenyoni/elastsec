@@ -12,7 +12,12 @@ import (
 )
 
 type Aggregator struct {
-    SupressedCount map[Key]int
+    SupressedCount map[Key]*Info
+}
+
+type Info struct {
+    Count int
+    Things []string
 }
 
 type Key struct {
@@ -21,7 +26,6 @@ type Key struct {
     Host string
     /* Optional */
     User string
-    Thing string
 }
 
 func (a Aggregator) Loop(events chan<- event.Event, window time.Duration) {
@@ -29,18 +33,19 @@ func (a Aggregator) Loop(events chan<- event.Event, window time.Duration) {
     defer timer.Stop()
 
     for c := time.Tick(window);; <- c {
-        for k,v := range a.SupressedCount {
+        for k,i := range a.SupressedCount {
             keyJS, err := json.MarshalIndent(&k, "  ","")
+            infoJS, err := json.MarshalIndent(&i, "  ","")
             if err != nil {
                 log.Fatal("Error parsing aggregator event data")
             }
-            if v > 0 {
+            if i.Count > 0 {
                 e := event.Event{
                     Beat: event.Beat{
                         Host: k.Host},
                     Type: constants.AggregationEvent,
-                    Message: fmt.Sprintf("supression of `%d` instance(s):\n%s",
-                    v,keyJS)}
+                    Message: fmt.Sprintf("supression of instance(s):\n%s\n%s",
+                    keyJS,infoJS)}
                 events <- e
             }
             delete(a.SupressedCount,k)
@@ -52,20 +57,26 @@ func (a Aggregator) Consume(e event.Event) (event.Event, bool) {
     if e.Type == constants.AggregationEvent {
         return e, true
     }
-    key := genKey(e)
-    count, ok := a.SupressedCount[key]
+    key,thing := genKeyThing(e)
+    info, ok := a.SupressedCount[key]
     if ok {
+        count := (*info).Count
         count = count + 1
-        a.SupressedCount[key] = count
+        (*info).Count = count
+        if !thingsContain((*info).Things, thing) {
+            (*info).Things = append((*info).Things,thing)
+        }
     } else {
-        a.SupressedCount[key] = 0
+        a.SupressedCount[key] = &Info{Count: 0,Things:[]string{thing}}
         return e, true
     }
+    _ = thing
     return e, false
 }
 
-func genKey(e event.Event) Key {
+func genKeyThing(e event.Event) (Key, string) {
     var k Key
+    var thing string
     k.Type = e.Type
     k.Host = e.Beat.Host
     quoteEscape := `\"`
@@ -82,10 +93,10 @@ func genKey(e event.Event) Key {
             k.User = strings.Trim(k.User,quoteEscape)
         }
         if pathSplitMatch != "" {
-            k.Thing = splitRegex.Split(pathMatch,2)[1]
-            k.Thing = strings.Trim(k.Thing,quoteEscape)
+            thing = splitRegex.Split(pathMatch,2)[1]
+            thing = strings.Trim(thing,quoteEscape)
         }
-        return k
+        return k,thing
     } else if e.Type == constants.AuthFailure {
         userRegex := regexp.MustCompile(`user=\w+`)
         userMatch := userRegex.FindString(e.Message)
@@ -107,8 +118,17 @@ func genKey(e event.Event) Key {
             k.User = userSplitRegex.Split(userMatch,2)[1]
         }
         if commandSplitMatch != "" {
-            k.Thing = commandSplitRegex.Split(commandMatch,2)[1]
+            thing = commandSplitRegex.Split(commandMatch,2)[1]
         }
     }
-    return k
+    return k,thing
+}
+
+func thingsContain(things []string, thing string) bool {
+    for _,t := range things {
+        if t == thing {
+            return true
+        }
+    }
+    return false
 }
