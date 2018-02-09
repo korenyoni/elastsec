@@ -17,7 +17,9 @@ func Loop(events chan<- event.Event, indexName string, filter elastic.Query) {
     ctx := context.Background()
 
     // create client
-    client, err := elastic.NewClient(elastic.SetURL(env.GetElasticUrl()), elastic.SetSniff(env.GetElasticSniff()), elastic.SetSnifferTimeoutStartup(time.Second * time.Duration(10)), elastic.SetSnifferTimeout(time.Second * time.Duration(10)))
+    client, err := elastic.NewClient(elastic.SetURL(env.GetElasticUrl()), elastic.SetSniff(env.GetElasticSniff()),
+    elastic.SetHealthcheckTimeoutStartup(time.Second * time.Duration(10)), elastic.SetHealthcheckTimeout(time.Second * time.Duration(10)),
+    elastic.SetSnifferTimeoutStartup(time.Second * time.Duration(10)), elastic.SetSnifferTimeout(time.Second * time.Duration(10)))
     if err != nil {
         if strings.Contains(err.Error(), "no Elasticsearch node available") {
             log.Fatal(errors.CreateConnectionError(err))
