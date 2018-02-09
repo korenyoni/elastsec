@@ -5,6 +5,7 @@ import (
     "os"
     "time"
     "strconv"
+    "regexp"
     "../constants"
 )
 
@@ -73,4 +74,16 @@ func GetSendEmailAddress() string {
 func GetEnvName() string {
     envName := os.Getenv(constants.EnvName)
     return envName
+}
+
+func GetUrgentRegex() regexp.Regexp {
+    urgentRegexStr := os.Getenv(constants.UrgentRegexEnv)
+    if urgentRegexStr == "" {
+        urgentRegexStr = constants.UrgentRegexDefault
+    }
+    urgentRegex, err := regexp.Compile(urgentRegexStr)
+    if err != nil {
+        log.Fatalf("Invalid regexp: %s",urgentRegexStr)
+    }
+    return *urgentRegex
 }

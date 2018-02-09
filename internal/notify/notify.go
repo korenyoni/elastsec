@@ -3,6 +3,7 @@ package notify
 import (
     "../event"
     "../env"
+    "../constants"
     "log"
     "fmt"
     "time"
@@ -14,6 +15,7 @@ type Email struct {
     Msg []byte
     SendAddress string
     Window time.Duration
+    Host string
 }
 
 func SendSlack(e event.Event, title string) {
@@ -43,8 +45,12 @@ func EmailInit(events chan event.Event, window time.Duration) *Email {
 }
 
 func (em *Email) Consume(e event.Event, title string) {
-    eventMessage := []byte(fmt.Sprintf("%s\n%s\n",title,e.Message))
+    em.Host = e.Beat.Host
+    eventMessage := []byte(fmt.Sprintf("%s\n%s\n\n",title,e.Message))
     em.Msg = append(em.Msg,eventMessage...)
+    if isUrgent(e) {
+        em.sendMailUrgent(e,title)
+    }
 }
 
 func (em *Email) Loop() {
@@ -62,14 +68,35 @@ func (em *Email) Loop() {
 
 func (em *Email) sendMail() error {
     address := em.SendAddress
-    cmd := exec.Command("sendmail", address)
-    stdin, err := cmd.StdinPipe()
+    cmd := exec.Command(constants.SendMailCommand, fmt.Sprintf("-s Elastsec security notifications on host %s, env %s", em.Host, env.GetEnvName()),address)
+    stdin,err := cmd.StdinPipe()
     if err != nil {
-        return err
+        panic(err)
     }
-    stdin.Write([]byte(fmt.Sprintf("To: %s\n", address)))
-    stdin.Write([]byte(fmt.Sprintf("Subject: %s\n", "Elastsec security notifications")))
-    stdin.Write(em.Msg)
+    stdin.Write([]byte(em.Msg))
+    stdin.Close()
     err = cmd.Start()
     return err
+}
+
+func (em *Email) sendMailUrgent(e event.Event, title string) error {
+    address := em.SendAddress
+    cmd := exec.Command(constants.SendMailCommand, fmt.Sprintf("-s Urgent Elastsec security notification on host %s, env %s", em.Host, env.GetEnvName()),address)
+    stdin,err := cmd.StdinPipe()
+    if err != nil {
+        panic(err)
+    }
+    stdin.Write([]byte(fmt.Sprintf("%s\n%s\n",title,e.Message)))
+    stdin.Close()
+    err = cmd.Start()
+    return err
+}
+
+func isUrgent(e event.Event) bool {
+    urgentRegex := env.GetUrgentRegex()
+    envName := env.GetEnvName()
+    if urgentRegex.FindString(envName) != "" {
+        return true && e.Type != constants.AggregationEvent
+    }
+    return false
 }

@@ -7,6 +7,7 @@ const (
     AggDurationEnv = "ESEC_AGG_DURATION"
     SlackHookEnv = "ESEC_SLACK_WEBHOOK"
     SendAddressEnv = "ESEC_SEND_ADDR"
+    UrgentRegexEnv = "ESEC_URGENT_REGEX"
     EnvName = "ESEC_ENV_NAME"
     SSHAcceptedConnection = "Accepted SSH connection"
     SSHDisconnect = "SSH Disconnect"
@@ -20,4 +21,6 @@ const (
     AggregationEvent = "Aggregation Event"
     FileMetricSet = "audit.file"
     KernelMetricSet = "audit.kernel"
+    UrgentRegexDefault = ".*prod.*"
+    SendMailCommand = "mail"
 )
