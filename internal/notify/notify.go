@@ -95,6 +95,9 @@ func (em *Email) sendMailUrgent(e event.Event, title string) error {
 func isUrgent(e event.Event) bool {
     urgentRegex := env.GetUrgentRegex()
     envName := env.GetEnvName()
+    if e.Type == constants.SSHFailedAuth || e.Type == constants.SSHInvalidUser {
+        return true
+    }
     if urgentRegex.FindString(envName) != "" {
         return true && e.Type != constants.AggregationEvent
     }

@@ -61,7 +61,7 @@ func (a Aggregator) Loop(events chan<- event.Event, window time.Duration) {
 }
 
 func (a Aggregator) Consume(e event.Event) (event.Event, bool) {
-    if e.Type == constants.AggregationEvent {
+    if e.Type == constants.AggregationEvent || e.Type == constants.SSHFailedAuth || e.Type == constants.SSHInvalidUser {
         return e, true
     }
     key,thing := genKeyThing(e)
