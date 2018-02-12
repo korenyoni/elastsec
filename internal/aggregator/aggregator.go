@@ -112,7 +112,7 @@ func genKeyThing(e event.Event) (Key, string) {
         if userSplitMatch != "" {
             k.User = splitRegex.Split(userMatch,2)[1]
         }
-    } else if e.Type == constants.SSHAcceptedConnection || e.Type == constants.SSHFailedPass {
+    } else if e.Type == constants.SSHAcceptedConnection || e.Type == constants.SSHFailedAuth {
         userRegex := regexp.MustCompile(`for\s+\w+`)
         userMatch := userRegex.FindString(e.Message)
         splitRegex := regexp.MustCompile(`\s`)

@@ -11,7 +11,7 @@ const (
     EnvName = "ESEC_ENV_NAME"
     SSHAcceptedConnection = "Accepted SSH connection"
     SSHDisconnect = "SSH Disconnect"
-    SSHFailedPass = "Failed SSH connection (invalid password)"
+    SSHFailedAuth = "Failed SSH connection (invalid password or publickey)"
     SSHInvalidUser = "Failed SSH connection (invalid user)"
     AuthFailure = "Authentication Failure"
     NotSudoer = "Unauthorized sudo attempt"
