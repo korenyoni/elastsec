@@ -27,6 +27,7 @@ func replaceMessage(events chan<- event.Event, e event.Event) {
     acceptedPublickey := regexp.MustCompile("Accepted publickey")
     disconnect := regexp.MustCompile("disconnected by")
     failedPassword := regexp.MustCompile("Failed password")
+    failedPublickey := regexp.MustCompile("Failed publickey")
     invalidUser := regexp.MustCompile("Invalid user.*from")
     authFailure := regexp.MustCompile("authentication failure")
     notInSudoers := regexp.MustCompile("NOT in sudoers")
@@ -38,6 +39,7 @@ func replaceMessage(events chan<- event.Event, e event.Event) {
     matchAcceptedPublickey := acceptedPublickey.FindString(e.Message)
     matchDisconnect := disconnect.FindString(e.Message)
     matchFailedPassword := failedPassword.FindString(e.Message)
+    matchFailedPublickey := failedPublickey.FindString(e.Message)
     matchInvalidUser := invalidUser.FindString(e.Message)
     matchAuthFailure := authFailure.FindString(e.Message)
     matchNotInSudoers := notInSudoers.FindString(e.Message)
@@ -49,7 +51,7 @@ func replaceMessage(events chan<- event.Event, e event.Event) {
     } else if matchSsh != "" && matchDisconnect != "" {
         e.Type = constants.SSHDisconnect
         events <- e
-    } else if matchSsh != "" && matchFailedPassword != "" {
+    } else if matchSsh != "" && (matchFailedPassword != "" || matchFailedPublickey != "") {
         e.Type = constants.SSHFailedAuth
         events <- e
     } else if matchSsh != "" && matchInvalidUser != "" {
