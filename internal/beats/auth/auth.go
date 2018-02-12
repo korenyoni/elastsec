@@ -23,11 +23,10 @@ func Loop(events chan<- event.Event) {
 
 func replaceMessage(events chan<- event.Event, e event.Event) {
     ssh := regexp.MustCompile("sshd")
-    acceptedPassword := regexp.MustCompile("Accepted")
+    acceptedPassword := regexp.MustCompile("Accepted password")
     acceptedPublickey := regexp.MustCompile("Accepted publickey")
     disconnect := regexp.MustCompile("disconnected by")
     failedPassword := regexp.MustCompile("Failed password")
-    failedConnection := regexp.MustCompile("Connection from")
     invalidUser := regexp.MustCompile("Invalid user.*from")
     authFailure := regexp.MustCompile("authentication failure")
     notInSudoers := regexp.MustCompile("NOT in sudoers")
@@ -39,7 +38,6 @@ func replaceMessage(events chan<- event.Event, e event.Event) {
     matchAcceptedPublickey := acceptedPublickey.FindString(e.Message)
     matchDisconnect := disconnect.FindString(e.Message)
     matchFailedPassword := failedPassword.FindString(e.Message)
-    matchFailedConnection := failedConnection.FindString(e.Message)
     matchInvalidUser := invalidUser.FindString(e.Message)
     matchAuthFailure := authFailure.FindString(e.Message)
     matchNotInSudoers := notInSudoers.FindString(e.Message)
@@ -51,7 +49,7 @@ func replaceMessage(events chan<- event.Event, e event.Event) {
     } else if matchSsh != "" && matchDisconnect != "" {
         e.Type = constants.SSHDisconnect
         events <- e
-    } else if matchSsh != "" && (matchFailedPassword != "" || (matchFailedConnection != "" && matchAcceptedPublickey == "")) {
+    } else if matchSsh != "" && matchFailedPassword != "" {
         e.Type = constants.SSHFailedAuth
         events <- e
     } else if matchSsh != "" && matchInvalidUser != "" {
